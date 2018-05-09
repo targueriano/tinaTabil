@@ -1,0 +1,429 @@
+#!/usr/bin/env python
+# -*- Mode: Python; coding: utf-8; indent-tabs-mode: t; c-basic-offset: 4; tab-width: 4 -*-
+#
+# main.py
+# Copyright (C) 2018 Taylan Branco Meurer <tbmeurer@gmail.com>
+#
+# TinaTabil is free software: you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# TinaTabil is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import gi
+gi.require_version ('Gtk', '3.0')
+from gi.repository import Gtk, GdkPixbuf, Gdk, Pango
+import os, sys, time, thread
+import sqlite3
+from datetime import date
+
+
+#Comment the first line and uncomment the second before installing
+#or making the tarball (alternatively, use project variables)
+#UI_FILE = "tinatabil.ui"
+#UI_FILE = "src/tinatabil.ui"
+UI_FILE = "/usr/local/share/tinatabil/ui/tinatabil.ui"
+BD = "/usr/local/share/tinatabil/ui/app.tinaContabil.python2.db"
+
+class Conectar():
+	def __init__(self, mes):
+		self.conn = sqlite3.connect(BD)
+		self.cursor = self.conn.cursor()
+		self.datos = list()
+		self.mes = mes
+		self.dic_mes = {
+		                1:'Enero',
+		                2:'Febrero',
+		                3:'Marzo',
+		                4:'Abril',
+		                5:'Mayo',
+		                6:'Junio',
+		                7:'Julio',
+		                8:'Agosto',
+		                9:'Septiembre',
+		                10:'Octubre',
+		                11:'Noviembre',
+		                12:'Diciembre'}
+
+	def close(self):
+		self.conn.close()
+
+	def read(self):
+		self.cursor.execute("""
+			SELECT * FROM Contabilidad WHERE Mes=?""", (self.dic_mes[self.mes],))
+
+		self.datos = self.cursor.fetchall()
+
+	def read_all(self):
+		self.cursor.execute("SELECT * FROM Contabilidad")
+		self.datos = self.cursor.fetchall()
+		self.cursor.close()
+		return self.datos
+
+
+	def update_mc(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][1]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Mercado_Colectivo=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+
+	def update_mp(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][2]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Mercado_Privado=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+
+	    self.conn.commit()
+
+
+
+	def update_alquiler(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][3]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Alquiler=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+
+	def update_net(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][4]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Internet=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+	def update_gas(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][5]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Gas=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+
+	def update_agua(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][6]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Agua=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+
+	def update_luz(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][7]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Luz=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+
+	def update_otro(self, valor):
+	    self.read()
+
+	    valor_atual = self.datos[0][8]+float(valor)
+	    total_atual = self.datos[0][9]+float(valor)
+	    saldo_atual = self.datos[0][11]-float(valor)
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Otros=?, Total=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, total_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+	def update_recibido(self, valor):
+	    self.read()
+	    valor_atual = self.datos[0][10]+float(valor)
+	    saldo_atual = self.datos[0][11]+float(valor)
+
+	    self.cursor.execute('''
+	        UPDATE Contabilidad SET Recibido=?, Saldo=?
+	        WHERE Mes=?''', (valor_atual, saldo_atual, self.dic_mes[self.mes] ))
+
+	    self.conn.commit()
+
+
+
+
+class GUI:
+	def __init__(self):
+
+		self.builder = Gtk.Builder()
+		self.builder.add_from_file(UI_FILE)
+
+		self.registro_variaveis_gui(self.builder)
+		self.builder.connect_signals(self)
+
+		#mes atual
+		self.mes = date.today().month
+		#ativar el radiobutton por medio de la funcion abajo
+		self.ativar_mes(self.mes)
+		#crear objetos para treeview
+		self.liststore = self.build_treeview_liststore_cell()
+		#escribir na tabla
+		self.escribir_tabla()
+
+		#status
+		self.dir_status = {
+					0:"¡Listo!",
+					1:"¡Update realizado con suceso!",
+					2:"Ocurrió un problema."
+		}
+		contexto = self.status.get_context_id(self.dir_status[0])
+		self.status.push(contexto, self.dir_status[0])
+		window = self.builder.get_object('window')
+		window.show_all()
+
+
+	def registro_variaveis_gui(self, builder):
+		#variaveis da GUI ==> spins
+		self.spin_mc = builder.get_object('spin_mc')
+		self.spin_mp = builder.get_object('spin_mp')
+		self.spin_alquiler = builder.get_object('spin_alquiler')
+		self.spin_internet = builder.get_object('spin_internet')
+		self.spin_gas = builder.get_object('spin_gas')
+		self.spin_agua = builder.get_object('spin_agua')
+		self.spin_luz = builder.get_object('spin_luz')
+		self.spin_otro = builder.get_object('spin_otro')
+		self.spin_recibido = builder.get_object('spin_recibido')
+		#variaveis da GUI ==> radios
+		self.radio_enero = builder.get_object('radio_enero')
+		self.radio_febrero = builder.get_object('radio_febrero')
+		self.radio_marzo = builder.get_object('radio_marzo')
+		self.radio_april = builder.get_object('radio_april')
+		self.radio_mayo = builder.get_object('radio_mayo')
+		self.radio_junio = builder.get_object('radio_junio')
+		self.radio_julio = builder.get_object('radio_julio')
+		self.radio_septiembre = builder.get_object('radio_septiembre')
+		self.radio_agosto = builder.get_object('radio_agosto')
+		self.radio_octubre = builder.get_object('radio_octubre')
+		self.radio_noviembre = builder.get_object('radio_noviembre')
+		self.radio_diciembre = builder.get_object('radio_diciembre')
+		#variaveis para liststore y arbol
+		self.treeview = builder.get_object('treeview')
+		#spinner
+		self.spinner = builder.get_object('spinner')
+		#statusbar
+		self.status = builder.get_object('status')
+
+	def status_dinamico(self, dic):
+		contexto = self.status.get_context_id(dic)
+		self.status.push(contexto, dic)
+		time.sleep(3)
+		self.status.pop(contexto)
+
+	def build_treeview_liststore_cell(self):
+		liststore = Gtk.ListStore(str,int,int,int,int,int,int,int,int,int,int,int,str)
+		self.treeview.set_model(liststore)
+		render_generic = Gtk.CellRendererText()
+		render_generic.props.background = "#4D5656"
+		render_total = Gtk.CellRendererText()
+		render_total.props.background = "#CD6155"
+		render_saldo = Gtk.CellRendererText()
+		render_saldo.props.background = "#229954"
+		render_rec = Gtk.CellRendererText()
+		render_rec.props.background = "#DC7633"
+		render_mes = Gtk.CellRendererText()
+		render_mes.props.background = "#154360"
+
+		mes = Gtk.TreeViewColumn('Mes', render_mes, text=0)
+		self.treeview.append_column(mes)
+		mc = Gtk.TreeViewColumn('Mercado Colectivo', render_generic, text=1)
+		self.treeview.append_column(mc)
+		mp = Gtk.TreeViewColumn('Mercado Privado', render_generic, text=2)
+		self.treeview.append_column(mp)
+		al = Gtk.TreeViewColumn('Alquiler', render_generic, text=3)
+		self.treeview.append_column(al)
+		net = Gtk.TreeViewColumn('Internet', render_generic, text=4)
+		self.treeview.append_column(net)
+		gas = Gtk.TreeViewColumn('Gas', render_generic, text=5)
+		self.treeview.append_column(gas)
+		agua = Gtk.TreeViewColumn('Agua', render_generic, text=6)
+		self.treeview.append_column(agua)
+		luz = Gtk.TreeViewColumn('Luz', render_generic, text=7)
+		self.treeview.append_column(luz)
+		otro = Gtk.TreeViewColumn('Otro', render_generic, text=8)
+		self.treeview.append_column(otro)
+		total = Gtk.TreeViewColumn('Total', render_total, text=9)
+		self.treeview.append_column(total)
+		rec = Gtk.TreeViewColumn('Recibido', render_rec, text=10)
+		self.treeview.append_column(rec)
+		saldo = Gtk.TreeViewColumn('Saldo', render_saldo, text=11)
+		self.treeview.append_column(saldo)
+		detalle = Gtk.TreeViewColumn('Detalle', render_generic, text=12)
+		self.treeview.append_column(detalle)
+
+		return liststore
+
+	def escribir_tabla(self):
+		self.liststore.clear()
+		conn = Conectar(self.mes)
+		datos = conn.read_all()
+
+		for i in xrange(12):
+			self.liststore.append(datos[i])
+
+		conn.close()
+
+	def ativar_mes(self, mes):
+		if mes == 1:
+			self.radio_enero.set_active(True)
+		elif mes == 2:
+			self.radio_febrero.set_active(True)
+		elif mes == 3:
+			self.radio_marzo.set_active(True)
+		elif mes == 4:
+			self.radio_april.set_active(True)
+		elif mes == 5:
+			self.radio_mayo.set_active(True)
+		elif mes == 6:
+			self.radio_junio.set_active(True)
+		elif mes == 7:
+			self.radio_julio.set_active(True)
+		elif mes == 8:
+			self.radio_agosto.set_active(True)
+		elif mes == 9:
+			self.radio_septiembre.set_active(True)
+		elif mes == 10:
+			self.radio_octubre.set_active(True)
+		elif mes == 11:
+			self.radio_noviembre.set_active(True)
+		elif mes == 12:
+			self.radio_diciembre.set_active(True)
+
+	def on_window_destroy(self, window):
+		Gtk.main_quit()
+
+	def verificar_mes_ativo(self):
+		if self.radio_enero.get_active():
+			self.mes = 1
+		elif self.radio_febrero.get_active():
+			self.mes = 2
+		elif self.radio_marzo.get_active():
+			self.mes = 3
+		elif self.radio_april.get_active():
+			self.mes = 4
+		elif self.radio_mayo.get_active():
+			self.mes = 5
+		elif self.radio_junio.get_active():
+			self.mes = 6
+		elif self.radio_julio.get_active():
+			self.mes = 7
+		elif self.radio_agosto.get_active():
+			self.mes = 8
+		elif self.radio_septiembre.get_active():
+			self.mes = 9
+		elif self.radio_octubre.get_active():
+			self.mes = 10
+		elif self.radio_noviembre.get_active():
+			self.mes = 11
+		elif self.radio_diciembre.get_active():
+			self.mes = 12
+
+	def on_but_limpiar_clicked(self, window):
+		self.spin_mc.set_value(0.00)
+		self.spin_mp.set_value(0.00)
+		self.spin_alquiler.set_value(0.00)
+		self.spin_internet.set_value(0.00)
+		self.spin_gas.set_value(0.00)
+		self.spin_agua.set_value(0.00)
+		self.spin_luz.set_value(0.00)
+		self.spin_otro.set_value(0.00)
+		self.spin_recibido.set_value(0.00)
+
+	def guardar(self):
+		#Conectar con datos y escribir en tabla
+		self.verificar_mes_ativo()
+		conn = Conectar(self.mes)
+		conn.read()
+		mc = float(self.spin_mc.get_value())
+		mp = float(self.spin_mp.get_value())
+		alq = float(self.spin_alquiler.get_value())
+		net = float(self.spin_internet.get_value())
+		gas = float(self.spin_gas.get_value())
+		agua = float(self.spin_agua.get_value())
+		luz = float(self.spin_luz.get_value())
+		otro = float(self.spin_otro.get_value())
+		rec = float(self.spin_recibido.get_value())
+
+		if mc != 0:
+			conn.update_mc(mc)
+		if mp != 0:
+			conn.update_mp(mp)
+		if alq != 0:
+			conn.update_alquiler(alq)
+		if net != 0:
+			conn.update_net(net)
+		if gas != 0:
+			conn.update_gas(gas)
+		if agua != 0:
+			conn.update_agua(agua)
+		if luz != 0:
+			conn.update_luz(luz)
+		if otro != 0:
+			conn.update_otro(otro)
+		if rec != 0:
+			conn.update_recibido(rec)
+
+		self.spinner.stop()
+		conn.close()
+		self.escribir_tabla()
+
+
+	def carregar_spinner(self):
+		self.spinner.start()
+
+	def on_but_guardar_clicked(self, window):
+		thread.start_new_thread(self.carregar_spinner,())
+		thread.start_new_thread(self.status_dinamico, (self.dir_status[1],))
+		thread.start_new_thread(self.guardar,())
+
+
+
+def main():
+	app = GUI()
+	Gtk.main()
+
+if __name__ == "__main__":
+	sys.exit(main())
