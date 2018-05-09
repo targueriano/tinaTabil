@@ -13,9 +13,6 @@ Program uri=../../src/tinatabil.py
 Run in terminal=2
 Working directories=../../.
 
-[Project Manager]
-Expand=tinatabil%%%tinatabil//src%%%tinatabil//src//tinatabil%%%tinatabil//src//ui
-
 [Build]
 Configuration list=1:Default:%%%1:Debug:Debug%%%1:Profiling:Profiling%%%1:Optimized:Optimized
 Selected Configuration=Default

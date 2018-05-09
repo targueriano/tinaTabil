@@ -257,17 +257,10 @@ class GUI:
 		liststore = Gtk.ListStore(str,int,int,int,int,int,int,int,int,int,int,int,str)
 		self.treeview.set_model(liststore)
 		render_generic = Gtk.CellRendererText()
-		render_generic.props.background = "#4D5656"
-		render_total = Gtk.CellRendererText()
-		render_total.props.background = "#CD6155"
-		render_saldo = Gtk.CellRendererText()
-		render_saldo.props.background = "#229954"
-		render_rec = Gtk.CellRendererText()
-		render_rec.props.background = "#DC7633"
-		render_mes = Gtk.CellRendererText()
-		render_mes.props.background = "#154360"
+		#render_generic.props.background = "#4D5656"
+		
 
-		mes = Gtk.TreeViewColumn('Mes', render_mes, text=0)
+		mes = Gtk.TreeViewColumn('Mes', render_generic, text=0)
 		self.treeview.append_column(mes)
 		mc = Gtk.TreeViewColumn('Mercado Colectivo', render_generic, text=1)
 		self.treeview.append_column(mc)
@@ -285,11 +278,11 @@ class GUI:
 		self.treeview.append_column(luz)
 		otro = Gtk.TreeViewColumn('Otro', render_generic, text=8)
 		self.treeview.append_column(otro)
-		total = Gtk.TreeViewColumn('Total', render_total, text=9)
+		total = Gtk.TreeViewColumn('Total', render_generic, text=9)
 		self.treeview.append_column(total)
-		rec = Gtk.TreeViewColumn('Recibido', render_rec, text=10)
+		rec = Gtk.TreeViewColumn('Recibido', render_generic, text=10)
 		self.treeview.append_column(rec)
-		saldo = Gtk.TreeViewColumn('Saldo', render_saldo, text=11)
+		saldo = Gtk.TreeViewColumn('Saldo', render_generic, text=11)
 		self.treeview.append_column(saldo)
 		detalle = Gtk.TreeViewColumn('Detalle', render_generic, text=12)
 		self.treeview.append_column(detalle)

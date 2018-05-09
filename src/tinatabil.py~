@@ -30,11 +30,11 @@ from datetime import date
 #UI_FILE = "tinatabil.ui"
 #UI_FILE = "src/tinatabil.ui"
 UI_FILE = "/usr/local/share/tinatabil/ui/tinatabil.ui"
-
+BD = "/usr/local/share/tinatabil/ui/app.tinaContabil.python2.db"
 
 class Conectar():
 	def __init__(self, mes):
-		self.conn = sqlite3.connect('app.tinaContabil.python2.db')
+		self.conn = sqlite3.connect(BD)
 		self.cursor = self.conn.cursor()
 		self.datos = list()
 		self.mes = mes
@@ -257,15 +257,8 @@ class GUI:
 		liststore = Gtk.ListStore(str,int,int,int,int,int,int,int,int,int,int,int,str)
 		self.treeview.set_model(liststore)
 		render_generic = Gtk.CellRendererText()
-		render_generic.props.background = "#4D5656"
-		render_total = Gtk.CellRendererText()
-		render_total.props.background = "#CD6155"
-		render_saldo = Gtk.CellRendererText()
-		render_saldo.props.background = "#229954"
-		render_rec = Gtk.CellRendererText()
-		render_rec.props.background = "#DC7633"
-		render_mes = Gtk.CellRendererText()
-		render_mes.props.background = "#154360"
+		#render_generic.props.background = "#4D5656"
+		
 
 		mes = Gtk.TreeViewColumn('Mes', render_mes, text=0)
 		self.treeview.append_column(mes)
