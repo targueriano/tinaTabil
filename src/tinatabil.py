@@ -27,10 +27,11 @@ from datetime import date
 
 #Comment the first line and uncomment the second before installing
 #or making the tarball (alternatively, use project variables)
-#UI_FILE = "tinatabil.ui"
+UI_FILE = "tinatabil.ui"
 #UI_FILE = "src/tinatabil.ui"
-UI_FILE = "/usr/local/share/tinatabil/ui/tinatabil.ui"
-BD = "/usr/local/share/tinatabil/ui/app.tinaContabil.python2.db"
+#UI_FILE = "/usr/local/share/tinatabil/ui/tinatabil.ui"
+#BD = "/usr/local/share/tinatabil/ui/app.tinaContabil.python2.db"
+BD = 'app.tinaContabil.python2.db'
 
 class Conectar():
 	def __init__(self, mes):
@@ -183,6 +184,13 @@ class Conectar():
 
 	    self.conn.commit()
 
+	def update_detalle(self, texto):
+		self.read()
+		self.cursor.execute('''
+			UPDATE Contabilidad SET Detalle=?
+			WHERE Mes=?''',(texto, self.dic_mes[self.mes]) )
+
+		self.conn.commit()
 
 
 
@@ -246,11 +254,13 @@ class GUI:
 		self.spinner = builder.get_object('spinner')
 		#statusbar
 		self.status = builder.get_object('status')
+		#variavel texto
+		self.detalle = builder.get_object('text_detalle')
 
 	def status_dinamico(self, dic):
 		contexto = self.status.get_context_id(dic)
 		self.status.push(contexto, dic)
-		time.sleep(3)
+		time.sleep(1)
 		self.status.pop(contexto)
 
 	def build_treeview_liststore_cell(self):
@@ -258,7 +268,7 @@ class GUI:
 		self.treeview.set_model(liststore)
 		render_generic = Gtk.CellRendererText()
 		#render_generic.props.background = "#4D5656"
-		
+
 
 		mes = Gtk.TreeViewColumn('Mes', render_generic, text=0)
 		self.treeview.append_column(mes)
@@ -364,6 +374,7 @@ class GUI:
 		self.spin_luz.set_value(0.00)
 		self.spin_otro.set_value(0.00)
 		self.spin_recibido.set_value(0.00)
+		self.detalle.set_text('')
 
 	def guardar(self):
 		#Conectar con datos y escribir en tabla
@@ -379,6 +390,7 @@ class GUI:
 		luz = float(self.spin_luz.get_value())
 		otro = float(self.spin_otro.get_value())
 		rec = float(self.spin_recibido.get_value())
+		detalle = self.detalle.get_text()
 
 		if mc != 0:
 			conn.update_mc(mc)
@@ -398,6 +410,8 @@ class GUI:
 			conn.update_otro(otro)
 		if rec != 0:
 			conn.update_recibido(rec)
+		if detalle:
+			conn.update_detalle(detalle)
 
 		self.spinner.stop()
 		conn.close()

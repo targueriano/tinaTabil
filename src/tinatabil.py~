@@ -27,10 +27,11 @@ from datetime import date
 
 #Comment the first line and uncomment the second before installing
 #or making the tarball (alternatively, use project variables)
-#UI_FILE = "tinatabil.ui"
+UI_FILE = "tinatabil.ui"
 #UI_FILE = "src/tinatabil.ui"
-UI_FILE = "/usr/local/share/tinatabil/ui/tinatabil.ui"
-BD = "/usr/local/share/tinatabil/ui/app.tinaContabil.python2.db"
+#UI_FILE = "/usr/local/share/tinatabil/ui/tinatabil.ui"
+#BD = "/usr/local/share/tinatabil/ui/app.tinaContabil.python2.db"
+BD = 'app.tinaContabil.python2.db'
 
 class Conectar():
 	def __init__(self, mes):
@@ -260,7 +261,7 @@ class GUI:
 		#render_generic.props.background = "#4D5656"
 		
 
-		mes = Gtk.TreeViewColumn('Mes', render_mes, text=0)
+		mes = Gtk.TreeViewColumn('Mes', render_generic, text=0)
 		self.treeview.append_column(mes)
 		mc = Gtk.TreeViewColumn('Mercado Colectivo', render_generic, text=1)
 		self.treeview.append_column(mc)
@@ -278,11 +279,11 @@ class GUI:
 		self.treeview.append_column(luz)
 		otro = Gtk.TreeViewColumn('Otro', render_generic, text=8)
 		self.treeview.append_column(otro)
-		total = Gtk.TreeViewColumn('Total', render_total, text=9)
+		total = Gtk.TreeViewColumn('Total', render_generic, text=9)
 		self.treeview.append_column(total)
-		rec = Gtk.TreeViewColumn('Recibido', render_rec, text=10)
+		rec = Gtk.TreeViewColumn('Recibido', render_generic, text=10)
 		self.treeview.append_column(rec)
-		saldo = Gtk.TreeViewColumn('Saldo', render_saldo, text=11)
+		saldo = Gtk.TreeViewColumn('Saldo', render_generic, text=11)
 		self.treeview.append_column(saldo)
 		detalle = Gtk.TreeViewColumn('Detalle', render_generic, text=12)
 		self.treeview.append_column(detalle)
